@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+.venv/
+.ipynb_checkpoints/
+.DS_Store
+data/recordings/
+harness/out/
+*.log
+.pytest_cache/

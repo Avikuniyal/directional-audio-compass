@@ -1,0 +1,24 @@
+*                          @Avikuniyal
+/dac/config.py             @Avikuniyal @SRIHAAS_GH @ANIRUDH_GH
+/dac/types.py              @Avikuniyal @SRIHAAS_GH @ANIRUDH_GH
+/dac/capture.py            @Avikuniyal
+/dac/bearing.py            @Avikuniyal
+/tests/test_bearing.py     @Avikuniyal
+/dac/sources.py            @SRIHAAS_GH
+/dac/synth.py              @SRIHAAS_GH
+/dac/srp.py                @SRIHAAS_GH
+/dac/stub_bearing.py       @SRIHAAS_GH
+/dac/tracker.py            @SRIHAAS_GH
+/harness/metrics.py        @SRIHAAS_GH
+/harness/run_eval.py       @SRIHAAS_GH
+/tests/test_synth.py       @SRIHAAS_GH
+/tests/test_tracker.py     @SRIHAAS_GH
+/dac/classifier.py         @ANIRUDH_GH
+/dac/fusion.py             @ANIRUDH_GH
+/dac/pipeline.py           @ANIRUDH_GH
+/dac/server.py             @ANIRUDH_GH
+/app/                      @ANIRUDH_GH
+/harness/fake_feed.py      @ANIRUDH_GH
+/models/                   @ANIRUDH_GH
+/tests/test_classifier.py  @ANIRUDH_GH
+/tests/test_pipeline.py    @ANIRUDH_GH
