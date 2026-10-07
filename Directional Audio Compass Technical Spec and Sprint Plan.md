@@ -387,7 +387,7 @@ Worked check 2: source at θ = 90° (right), pair (0, 3). p\_0 − p\_3 = (0.066
 
 **Input.** The six `(cc, lags)` pairs from the Section 5.2 contract, in `PAIRS` order. Srihaas builds and tests the steering table and scoring loop with no `bearing.py` code: fake six curves with narrow bumps at the predicted delays for 60° and check 60° comes back, then do 240° to check front/back resolves (test S14 in Section 8.3).
 
-**Search.** Candidate bearings `ANGLE_GRID_DEG = 0, 2, 4, …, 358` (180 values, PROVISIONAL). For each candidate θ\_k and each pair, convert τ\_ij(θ\_k) to the nearest upsampled lag index, m = round(τ × 16000 × 16), and look up r\_ij at that index. These 180 × 6 indices depend only on geometry, so compute them once at startup.
+**Search.** Candidate bearings `ANGLE_GRID_DEG = 0, 2, 4, …, 358` (180 values, PROVISIONAL). For each candidate θ\_k and each pair, compute τ\_ij(θ\_k) in samples (τ × 16000) and read r\_ij at that lag by linear interpolation on the `lags` array it was given (`np.interp`; a steered lag outside the window clamps to the edge value). These 180 × 6 delays depend only on geometry, so compute them once at startup. Note: 141 points at a 1/16 step cover ±4.375 samples, slightly less than the 4.385-sample diagonal maximum; Avik may use 143 points (±4.4375) to cover it fully.
 
 ```latex
 P(\theta_k) = \sum_{(i,j)\ \in\ \text{PAIRS}} r_{ij}\big(\tau_{ij}(\theta_k)\big)
@@ -615,11 +615,12 @@ def estimate_bearing(block, t_s=None):
 
 # dac/srp.py  (owner: Srihaas)
 def build_steering_table(): ...
-    # Once at startup: for each angle in ANGLE_GRID_DEG and each pair in PAIRS, the lag index
-    # of tau_ij(theta) in the Section 5.2 lag grid. Uses MIC_XY_M, C_MPS, FS_HZ only.
+    # Once at startup (cached): tau_ij(theta) in samples (float), shape (180, 6), for each angle in
+    # ANGLE_GRID_DEG and each pair in PAIRS. Uses MIC_XY_M, C_MPS, FS_HZ only.
 def srp_phat(curves):
     # curves: list of 6 (cc, lags) in PAIRS order. Returns (bearing_deg, confidence, srp),
-    # bearing None and confidence 0 if there is no usable peak. Section 5.4.
+    # bearing None and confidence 0 if there is no usable peak (NaN/inf, or a flat map).
+    # Raises ValueError unless there are exactly 6 well-formed curves. Section 5.4.
     ...
 
 # dac/stub_bearing.py  (owner: Srihaas)
