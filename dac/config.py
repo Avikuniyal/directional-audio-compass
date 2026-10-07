@@ -26,6 +26,7 @@ UPSAMPLE = 16
 BAND_HZ = (200.0, 7000.0)
 ANGLE_GRID_DEG = list(range(0, 360, 2))   # 180 candidates
 MIN_LEVEL_DBFS = -60.0
+MAX_LAG_SAMPLES = 4.4                     # GCC window half-width, Section 5.2 contract
 
 # ---- Tracker (owner: Srihaas, PROVISIONAL) ----
 CONF_MIN = 0.3
