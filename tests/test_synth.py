@@ -18,8 +18,8 @@ def test_plane_wave_45deg_delay_between_columns_0_and_2():
     out = synth.render_plane_wave(sig, 45.0, snr_db=None)
     f_bin = 500 * n / config.FS_HZ    # exactly on a bin (500 Hz * 4096 / 16000 = 128)
     ph = [np.angle(np.fft.rfft(out[:, c].astype(np.float64))[int(f_bin)]) for c in (0, 2)]
-    dphi = (ph[0] - ph[1] + np.pi) % (2 * np.pi) - np.pi     # column 0 leads: negative delay
-    delay_s = -dphi / (2 * np.pi * 500)                      # t_2 - t_0, positive
+    dphi = (ph[0] - ph[1] + np.pi) % (2 * np.pi) - np.pi     
+    delay_s = dphi / (2 * np.pi * 500)                       # t_2 - t_0 > 0: column 0 hears it first
     assert abs(delay_s - 274.1e-6) < 0.5e-6                  # 4.39 samples
 
 
