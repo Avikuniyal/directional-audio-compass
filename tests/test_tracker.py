@@ -60,9 +60,10 @@ def test_t3_trend():
 
 
 @pytest.mark.xfail(strict=True, reason=(
-    "Known S7 tuning finding: with provisional config (LEVEL_MARGIN_DB=10, TREND_MIN_DBPS=3) the flag "
-    "first fires near 1.5-2 m. Level only rises ~10 dB between 6 m and 1.9 m, and the noise floor "
-    "here is the source's own starting level. Fix by tuning (S7), then remove this marker."))
+    "Known S7 tuning finding: with provisional config the flag never turns on before the scenario "
+    "ends at 1 m. LEVEL_MARGIN_DB=10 is only met from about 1.6 m (level rises ~10 dB between 6 m "
+    "and 2 m, and the noise floor here is the source's own starting level), then ON_HOLD_S adds "
+    "0.5 s. Fix by tuning (S7), then remove this marker."))
 def test_t4_approach_before_3m():
     sc = synth.make_scenario('approach_0deg')
     stub = StubBearing(lambda t: sc.truth(t)['bearing_deg'], noise_deg=8.0, dropout=0.05, seed=1)
