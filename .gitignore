@@ -8,3 +8,4 @@ harness/out/
 *.log
 .pytest_cache/
 rich text with attachments (RTFD) data
+.claude/
