@@ -17,4 +17,16 @@ def gcc_phat(x_i, x_j):
     mask = (position_hz < config.BAND_HZ[0]) | (position_hz > config.BAND_HZ[1])
     dial_gaps[mask] = 0
 
-    return dial_gaps
+    cc = np.fft.irfft(dial_gaps, config.N_FFT*config.UPSAMPLE)
+    max_shift = int(np.ceil(config.MAX_LAG_SAMPLES*config.UPSAMPLE))
+
+    cc = np.concatenate((cc[-max_shift:], cc[0:max_shift+1]))
+    lags = np.arange(len(cc))
+    lags = ((lags - max_shift) / config.UPSAMPLE)
+
+    return cc, lags
+
+def pair_delay_s(x_i, x_j):
+    cc, lags = gcc_phat(x_i, x_j)
+    idxMax = np.argmax(cc)
+    return (lags[idxMax] / config.FS_HZ)
