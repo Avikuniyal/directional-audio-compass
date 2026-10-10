@@ -7,3 +7,4 @@ One line per AI-written piece: file, what the AI wrote, who reviewed it.
 - 2026-10-08: dac/sources.py, tests/test_sources.py (S2) written by a Claude subagent from spec 6.3 and 8.5. Reviewed by Srihaas; Avik's checking-rule review pending.
 - 2026-10-08: harness/metrics.py, harness/run_eval.py, tests/test_harness.py (S11) written by a Claude subagent from spec 8.8. Reviewed by Srihaas; Avik's checking-rule review pending.
 - 2026-10-08: docs/DECISIONS.md T4 tuning-finding line and the PR descriptions for PRs #2 and #3 drafted by Claude. Reviewed by Srihaas.
+- 2026-10-09: GCC-PHAT synthetic experiment harness and B1 Notebook made by Claude. Reviewed by Avik. GCC-PHAT function fully made by Avik
