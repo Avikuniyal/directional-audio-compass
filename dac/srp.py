@@ -77,5 +77,18 @@ def srp_phat(curves):
     if bearing >= 360.0:    # float rounding of a tiny negative value
         bearing = 0.0
 
-    conf = (p_max - srp.mean()) / (p_max - p_min + 1e-12)
-    return float(bearing), float(np.clip(conf, 0.0, 1.0)), srp
+    return float(bearing), _pair_agreement_confidence(curves, tau[k]), srp
+
+
+def _pair_agreement_confidence(curves, tau_k):
+    """How well all six pairs agree with the winning bearing, scaled to 0..1.
+
+    Each pair votes with its own correlation peak: score 1 if the peak sits exactly at the delay the
+    winning bearing predicts, falling to 0 at CONF_AGREE_TOL_SAMPLES away. Independent noise puts
+    the six peaks at unrelated lags, so the mean score stays low. Using the peak position rather
+    than its height keeps this meaningful for narrow-band sources, whose peaks are wide and low.
+    """
+    score = [max(0.0, 1.0 - abs(lags[np.argmax(cc)] - t) / config.CONF_AGREE_TOL_SAMPLES)
+             for t, (cc, lags) in zip(tau_k, curves)]
+    scaled = (np.mean(score) - config.CONF_AGREE_FLOOR) / (1.0 - config.CONF_AGREE_FLOOR)
+    return float(np.clip(scaled, 0.0, 1.0))

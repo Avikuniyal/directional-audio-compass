@@ -28,6 +28,14 @@ ANGLE_GRID_DEG = list(range(0, 360, 2))   # 180 candidates
 MIN_LEVEL_DBFS = -60.0
 MAX_LAG_SAMPLES = 4.4                     # GCC window half-width, Section 5.2 contract
 
+# ---- SRP confidence (owner: Srihaas, PROVISIONAL) ----
+# Per pair, how close that pair's own correlation peak is to the delay the winning bearing predicts
+# (score 1 at zero error, 0 at CONF_AGREE_TOL_SAMPLES or more), averaged over the 6 pairs.
+# Random noise averages about 0.15 (95th percentile 0.37); a real source scores 0.8 to 0.95.
+# conf maps CONF_AGREE_FLOOR -> 0 and 1 -> 1.
+CONF_AGREE_TOL_SAMPLES = 0.5
+CONF_AGREE_FLOOR = 0.3
+
 # ---- Tracker (owner: Srihaas, PROVISIONAL) ----
 CONF_MIN = 0.3
 TREND_WINDOW_S = 1.0
