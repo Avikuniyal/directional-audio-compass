@@ -256,9 +256,6 @@ def test_noise_confidence_well_below_clean_source():
     assert clean > np.mean(noise) + 0.2
 
 
-@pytest.mark.xfail(reason="Section 7.2 B4 wants confidence < 0.3 on noise in >= 95% of trials; "
-                          "the Section 5.4 formula gives ~0.5 (5th-95th pct 0.39-0.62). "
-                          "Formula or CONF_MIN needs revisiting by the team.")
 def test_b4_noise_confidence_below_0_3():
     rng = np.random.default_rng(0)
     low = 0
@@ -267,6 +264,32 @@ def test_b4_noise_confidence_below_0_3():
         _, c, _ = srp_phat([_ref_gcc_phat(X[:, i], X[:, j]) for i, j in config.PAIRS])
         low += c < 0.3
     assert low >= 190
+
+
+def test_confidence_survives_narrowband_source(monkeypatch):
+    # Low-pass sources give wide, low PHAT peaks when the band is narrowed to match; the peak
+    # position still agrees across pairs, so confidence must stay well above CONF_MIN.
+    from dac import synth
+    from dac.bearing import gcc_phat
+    monkeypatch.setattr(config, "BAND_HZ", (200.0, 1000.0))
+    confs = []
+    for i, theta in enumerate((20, 100, 190, 300)):
+        X = synth.render_plane_wave(synth.lowpass_noise(config.BLOCK_N, 1000.0, seed=i), theta, 10.0, seed=i)
+        b, c, _ = srp_phat([gcc_phat(X[:, a], X[:, b2]) for a, b2 in config.PAIRS])
+        assert abs(circ_err(b, theta)) < 10   # narrow band is less accurate; this test is about confidence
+        confs.append(c)
+    assert min(confs) > 0.4
+
+
+def test_common_mode_signal_gives_low_confidence():
+    # The same signal on all four mics (e.g. electrical hum) is not a direction.
+    rng = np.random.default_rng(5)
+    low = 0
+    for _ in range(100):
+        X = (rng.standard_normal((config.BLOCK_N, 1)) + rng.standard_normal((config.BLOCK_N, 4))).astype(np.float32)
+        _, c, _ = srp_phat([_ref_gcc_phat(X[:, i], X[:, j]) for i, j in config.PAIRS])
+        low += c < 0.3
+    assert low >= 95
 
 
 def test_confidence_drops_as_peaks_flatten():

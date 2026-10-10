@@ -395,13 +395,14 @@ P(\theta_k) = \sum_{(i,j)\ \in\ \text{PAIRS}} r_{ij}\big(\tau_{ij}(\theta_k)\big
 
 The bearing is the θ\_k with the largest P. Refining between grid points with a parabola through the peak and its two neighbors is allowed here (P is smooth, unlike a raw PHAT peak), owner's choice.
 
-**Confidence (PROVISIONAL, owner Srihaas).** How much the winning direction stands out:
+**Confidence (PROVISIONAL, owner Srihaas).** How well all six pairs agree with the winning direction. Let θ\_k be the winning grid angle, τ\_p(θ\_k) the delay it predicts for pair p, and L\_p the lag of pair p's own correlation peak (the argmax of its curve). Each pair scores how close its peak is to the prediction, with tolerance `CONF_AGREE_TOL_SAMPLES = 0.5`:
 
 ```latex
-\text{conf} = \operatorname{clip}\!\left(\frac{P_{\max} - \operatorname{mean}(P)}{P_{\max} - \min(P) + 10^{-12}},\ 0,\ 1\right)
+s_p = \max\!\left(0,\ 1 - \frac{|L_p - \tau_p(\theta_k)|}{\text{tol}}\right),\qquad
+\text{conf} = \operatorname{clip}\!\left(\frac{\overline{s} - \text{floor}}{1 - \text{floor}},\ 0,\ 1\right),\quad \text{floor} = \texttt{CONF\_AGREE\_FLOOR} = 0.3
 ```
 
-A single sharp peak on a low, flat background gives a value near 1. A flat map (noise from everywhere) gives a value near 0.
+where s̄ is the mean of s\_p over the six pairs. Independent noise puts the six peaks at unrelated lags (measured: 95th percentile of s̄ is 0.37, so conf is near 0). A real source puts every peak at its predicted delay (s̄ of 0.8 to 0.95). This replaced the earlier formula conf = (P\_max − mean P) / (P\_max − min P), which gave about 0.5 on pure noise and 0.77 on a clean source, so `CONF_MIN = 0.3` accepted noise bearings (test B4). The peak position is used rather than the peak height so that narrow-band sources, whose correlation peaks are wide and low, still score high.
 
 **Silence.** If the block's level is below `MIN_LEVEL_DBFS = -60` (PROVISIONAL), return bearing `None` and confidence 0 instead of a random angle.
 
